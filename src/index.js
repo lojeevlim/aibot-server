@@ -8,8 +8,16 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const URL = process.env.URL || "http://localhost";
+
 // Middleware
-app.use(cors({ origin: `${process.env.URL}:${PORT}` })); // Vue dev server
+app.use(
+  cors({
+    origin: URL,
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
 // Routes
@@ -19,5 +27,5 @@ app.use("/api/chat", chatRoutes);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on ${URL}:${PORT}`);
 });
