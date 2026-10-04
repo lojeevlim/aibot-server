@@ -29,3 +29,37 @@ export async function handleChat(req, res, next) {
     next(err);
   }
 }
+
+import { GoogleGenAI } from "@google/genai";
+
+export async function handleChatv1(req, res, next) {
+  try {
+    const ai = new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY,
+    });
+
+    const { messages, model } = req.body;
+
+    if (!messages || !Array.isArray(messages)) {
+      return res.status(400).json({
+        error: "messages array is required",
+      });
+    }
+
+    const prompt = messages
+      .map((message) => `${message.role}: ${message.content}`)
+      .join("\n");
+
+    const response = await ai.models.generateContent({
+      model: model ?? "gemini-3.8-flash",
+      contents: prompt,
+    });
+     console.log("model", model);
+     console.log("response", response);
+    res.json({
+      message: response.text,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
